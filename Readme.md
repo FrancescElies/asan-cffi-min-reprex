@@ -6,6 +6,8 @@ This dll is build for windows and this issue has been reproduced with.
  - Python 3.9.6
  - cffi 1.15.0
 
+👀 See [cffi-issue](https://foss.heptapod.net/pypy/cffi/-/issues/515)  
+
 ## Setup
 On windows install.
 
