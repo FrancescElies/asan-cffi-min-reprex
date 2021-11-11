@@ -4,19 +4,21 @@ on: [push]
 
 jobs:
   run-test:
-    name: "${{ matrix.os }} python${{ matrix.python-version }}"
+    name: "windows lvm${{ matrix.llvm-version }} python${{ matrix.python-version }}"
 
     strategy:
+      fail-fast: false
       matrix:
-        os:
-          - ubuntu
-          - windows
-          # - macos
+        cffi-version:
+          - "1.15.0"
         python-version:
           - "3.9"
           - "3.10"
+        llvm-version:
+          - 13
+          - 12
 
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -29,4 +31,35 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install cffi==1.15.0
+          pip install cffi==${{ matrix.cffi-version }}
+
+      - name: Install llvm
+        run: |
+
+          Invoke-WebRequest https://github.com/sharkdp/fd/releases/download/v8.2.1/fd-v8.2.1-i686-pc-windows-msvc.zip -OutFile fd.zip
+          7z x fd.zip
+
+          Invoke-WebRequest https://github.com/llvm/llvm-project/releases/download/llvmorg-${env:llvmversion}.0.0/LLVM-${env:llvmversion}.0.0-win64.exe -OutFile llvm.exe
+          7z x -ollvm llvm.exe
+
+          ls
+          ./fd.exe clang_rt.asan_dynamic-x86_64.dll
+          ./fd.exe clang.exe
+
+          echo "$(Get-Location)\llvm\bin"                                          | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          echo "$(Get-Location)\llvm\lib\clang\${env:llvmversion}.0.0\lib\windows" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+        shell: pwsh
+        env:
+          llvmversion: ${{ matrix.llvm-version }}
+
+      - name: Test
+        run: |
+          # $env:PATH="$(Get-Location)\llvm\bin;$env:PATH"
+          # $env:PATH="$(Get-Location)\llvm\lib\clang\${env:llvmversion}.0.0\lib\windows;$env:PATH"
+          # echo $env:PATH
+          Get-Command clang
+          Get-Command clang_rt.asan_dynamic-x86_64.dll
+          python test.py
+        shell: pwsh
+        env:
+          llvmversion: ${{ matrix.llvm-version }}
