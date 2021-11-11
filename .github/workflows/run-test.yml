@@ -5,7 +5,17 @@ on: [push]
 jobs:
   run-test:
 
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os:
+          - ubuntu
+          - windows
+          - macos
+        py:
+          - cp39
+          - cp310
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
