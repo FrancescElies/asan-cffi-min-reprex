@@ -4,25 +4,28 @@ on: [push]
 
 jobs:
   run-test:
+    name: "${{ matrix.os }} python${{ matrix.python-version }}"
 
     strategy:
       matrix:
         os:
           - ubuntu
           - windows
-          - macos
-        py:
-          - cp39
-          - cp310
+          # - macos
+        python-version:
+          - "3.9"
+          - "3.10"
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
 
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: "${{ matrix.python-version }}"
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
