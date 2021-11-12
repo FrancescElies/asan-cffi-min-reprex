@@ -66,7 +66,7 @@ def build_cffi_api_mode(cffi_api_mode_c_file: Path):
 def build():
 
     print("Clean previous compilation")
-    run("git clean -fdx c_src")
+    # run("git clean -fdx c_src")
 
     print("Clang version")
     run("clang -v")
