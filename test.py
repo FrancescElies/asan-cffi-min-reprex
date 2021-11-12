@@ -62,7 +62,6 @@ def test_example(asan_cffi_api_mode=False, no_asan=False, asan=False):
   C = ffi.dlopen(str(dllPath.absolute()))
 
   mystruct = ffi.new("mystruct *")
-  print(f'OK test_example {asan=}')
 
 
 class Mytest(unittest.TestCase):
