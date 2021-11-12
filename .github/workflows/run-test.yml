@@ -37,15 +37,9 @@ jobs:
       - name: Install llvm
         run: |
 
-          Invoke-WebRequest https://github.com/sharkdp/fd/releases/download/v8.2.1/fd-v8.2.1-i686-pc-windows-msvc.zip -OutFile fd.zip
-          7z x fd.zip
-
           Invoke-WebRequest https://github.com/llvm/llvm-project/releases/download/llvmorg-${env:llvmversion}.0.0/LLVM-${env:llvmversion}.0.0-win64.exe -OutFile llvm.exe
           7z x -ollvm llvm.exe
 
-          ls
-          ./fd.exe clang_rt.asan_dynamic-x86_64.dll
-          ./fd.exe clang.exe
 
           echo "$(Get-Location)\llvm\bin"                                          | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
           echo "$(Get-Location)\llvm\lib\clang\${env:llvmversion}.0.0\lib\windows" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
@@ -53,10 +47,22 @@ jobs:
         env:
           llvmversion: ${{ matrix.llvm-version }}
 
-      - name: Test
+      - name: show clang files
         run: |
+          Invoke-WebRequest https://github.com/sharkdp/fd/releases/download/v8.2.1/fd-v8.2.1-i686-pc-windows-msvc.zip -OutFile fd.zip
+          7z x fd.zip
+
+          ./fd.exe clang_rt.asan_dynamic-x86_64.dll
+          ./fd.exe clang.exe
+
           Get-Command clang
           Get-Command clang_rt.asan_dynamic-x86_64.dll
+        shell: pwsh
+        env:
+          llvmversion: ${{ matrix.llvm-version }}
+
+      - name: Test
+        run: |
           python test.py
         shell: pwsh
         env:
