@@ -17,6 +17,7 @@ jobs:
         llvm-version:
           - 13
           - 12
+          - 11
 
     runs-on: windows-latest
 
