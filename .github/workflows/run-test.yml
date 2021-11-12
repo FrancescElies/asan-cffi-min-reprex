@@ -9,9 +9,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cffi-version:
-          - "1.15.0"
         python-version:
+          - "3.7"
+          - "3.8"
           - "3.9"
           - "3.10"
         llvm-version:
@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install cffi==${{ matrix.cffi-version }}
+          pip install cffi
 
       - name: Install llvm
         run: |
@@ -54,9 +54,6 @@ jobs:
 
       - name: Test
         run: |
-          # $env:PATH="$(Get-Location)\llvm\bin;$env:PATH"
-          # $env:PATH="$(Get-Location)\llvm\lib\clang\${env:llvmversion}.0.0\lib\windows;$env:PATH"
-          # echo $env:PATH
           Get-Command clang
           Get-Command clang_rt.asan_dynamic-x86_64.dll
           python test.py
