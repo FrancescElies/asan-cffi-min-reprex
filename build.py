@@ -118,9 +118,9 @@ def build_pyd_clang_asan():
         out_folder.mkdir()
 
     module_name = "cffi_wrap"
-    cffi_api_mode_c_file = (repo / (f"{out_folder}/{module_name}.c")).absolute()
 
-    target_c_file = (repo / (f"{out_folder}/{module_name}.c")).absolute()
+    cffi_api_mode_c_file = ((out_folder / f"{module_name}.c")).absolute()
+
     updated_c_source = make_c_source(
         ffi, module_name=module_name,
         preamble="""
@@ -130,7 +130,7 @@ def build_pyd_clang_asan():
         // contains implementation of things declared in cdef()
         #include "example.h"   // the C header of the library
         """,
-        target_c_file=target_c_file, verbose=True)
+        target_c_file=cffi_api_mode_c_file, verbose=True)
 
     print("Clang version")
     run("clang -v")
@@ -144,7 +144,7 @@ def build_pyd_clang_asan():
                     r"-I C:\Python39\include",
                     "-fvisibility=default",
                     f"-c example.c",
-                    f"-o {out_folder}/example.obj")), cwd=repo / "c_src")
+                    f"-o {out_folder / 'example.obj'}")), cwd=repo / "c_src")
 
     run(" ".join(("clang",
                     " ".join(clang_flags),
@@ -202,15 +202,15 @@ def _build(out_folder: Path,
                     " ".join(extra_flags),
                     "-I c_src",
                     "-c c_src/example.c",
-                    f"-o {out_folder}/example.o")))
+                    f"-o {out_folder / 'example.o'}")))
 
     run(" ".join(("clang",
                     " ".join(clang_flags),
                     " ".join(extra_flags),
                     "-Wl,/ignore:longsections",
-                    f"{out_folder}/example.o",
+                    f"{out_folder / 'example.o'}",
                     "-shared",
-                    f"-o {out_folder}/example.dll")))
+                    f"-o {out_folder / 'example.dll'}")))
 
     run("ls", cwd=out_folder)
 
