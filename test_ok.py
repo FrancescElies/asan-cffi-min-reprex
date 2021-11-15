@@ -1,5 +1,12 @@
 
+from pathlib import Path
+
 from build import build_dll_clang, build_dll_clang_asan, load_ffi
+
+__file__ = "c:/s/asan-cffi-min-reprex/test.py"
+file_path = Path(__file__).absolute()
+repo = file_path.parent
+
 
 if __name__ == '__main__':
 
