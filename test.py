@@ -54,17 +54,11 @@ def test_abi_mode():
     print(f'OK test_abi_mode asan')
 
 
-class Mytest(unittest.TestCase):
-  def dummy_test(self):
-    ...
-
-
 if __name__ == '__main__':
 
   # The following combination BOOM! :cry:
   test_abi_mode()
   test_abi_mode_asan()
-  unittest.main()  # comment this line and AddressSanitizer will not complain
 
   # test_api_mode_asan()
 
