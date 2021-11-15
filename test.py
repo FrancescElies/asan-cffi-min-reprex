@@ -19,9 +19,9 @@ def test_msvc_cffi_api_mode():
 def test_api_mode_asan():
     from build import build_pyd_clang_asan
     build_pyd_clang_asan()
-    # dumpbin(Path(r"c:\s\eklang\DevOps\clang\bin\LLVM-13.0.0-win64\lib\site-packages\lldb\_lldb.pyd"), exports=True)
+    # dumpbin(Path(r"c:\s\eklang\DevOps\clang\bin\LLVM-13.0.0-win64\lib\site-packages\lldb\_lldb.pyd"), "exports")
     dll_path_dir = repo / "c_src/pyd_clang_asan"
-    dumpbin (dll_path_dir / "cffi_wrap.pyd", exports=True)
+    dumpbin (dll_path_dir / "cffi_wrap.pyd", "exports")
     import c_src.pyd_clang_asan.cffi_wrap as cffi_wrap
     mystruct = cffi_wrap.ffi.new("mystruct *")
     print(f'OK API mode asan: {mystruct}')

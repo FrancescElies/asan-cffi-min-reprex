@@ -27,21 +27,12 @@ def run(*args, **kwargs):
     print("\n\n")
 
 
-def dumpbin(path: Path, imports=False, exports=False, symbols=False):
+def dumpbin(path: Path, cmd="exports"):
     dumpbin_exe = (r"C:\Program Files (x86)\Microsoft Visual Studio\2019"
                     r"\Professional\VC\Tools\MSVC\14.29.30133\bin\HostX86\x86"
                     r"\dumpbin.exe" )
 
-    assert any((imports, exports, symbols))
-
-    if exports:
-        subprocess.run(rf'"{dumpbin_exe}" /exports "{path.absolute()}"')
-
-    if imports:
-        subprocess.run(rf'"{dumpbin_exe}" /imports "{path.absolute()}"')
-
-    if symbols:
-        subprocess.run(rf'"{dumpbin_exe}" /symbols "{path.absolute()}"')
+    subprocess.run(rf'"{dumpbin_exe}" /{cmd} "{path.absolute()}"')
 
 def llvm_nm(path: Path):
     """ OVERVIEW: llvm symbol table dumper """
