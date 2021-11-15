@@ -202,3 +202,5 @@ dmypy.json
 cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+/venv-ubuntu/
+/c_src/pyd_clang_asan/cffi_wrap.c

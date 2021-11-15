@@ -1,0 +1,3 @@
+fLIBRARY cffi_wrap
+EXPORTS
+    PyInit_cffi_wrap
