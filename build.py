@@ -212,6 +212,8 @@ def _build(out_folder: Path,
                     "-shared",
                     f"-o {out_folder}/example.dll")))
 
+    run("ls", cwd=out_folder)
+
 
 if __name__ == '__main__':
     build_dll_clang()
