@@ -9,6 +9,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - windows-latest
+          - ubuntuuu-latest
         python-version:
           # - "3.7"
           # - "3.8"
@@ -19,7 +22,7 @@ jobs:
           # - 12
           # - 11
 
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v2
@@ -35,6 +38,24 @@ jobs:
           pip install cffi
 
       - name: Install llvm
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          wget https://github.com/llvm/llvm-project/releases/download/llvmorg-${env:llvmversion}.0.0/clang+llvm-${env:llvmversion}.0.0-x86_64-linux-gnu-ubuntu-20.04.tar.xz
+          tar -xf clang+llvm-${env:llvmversion}.0.0-x86_64-linux-gnu-ubuntu-20.04.tar.xz
+
+          cd clang+llvm-${env:llvmversion}.0.0-x86_64-linux-gnu-ubuntu-20.04
+          echo "$(Get-Location)/bin"                                          | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          echo "$(Get-Location)/lib/clang/${env:llvmversion}.0.0/lib/linux"   | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
+          ls "$(Get-Location)/bin"
+          ls "$(Get-Location)/lib/clang/${env:llvmversion}.0.0/lib/linux"
+
+        shell: pwsh
+        env:
+          llvmversion: ${{ matrix.llvm-version }}
+
+      - name: Install llvm
+        if: matrix.os == 'windows-latest'
         run: |
 
           Invoke-WebRequest https://github.com/llvm/llvm-project/releases/download/llvmorg-${env:llvmversion}.0.0/LLVM-${env:llvmversion}.0.0-win64.exe -OutFile llvm.exe
@@ -43,12 +64,8 @@ jobs:
 
           echo "$(Get-Location)\llvm\bin"                                          | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
           echo "$(Get-Location)\llvm\lib\clang\${env:llvmversion}.0.0\lib\windows" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
-        shell: pwsh
-        env:
-          llvmversion: ${{ matrix.llvm-version }}
 
-      - name: show clang files
-        run: |
+          echo Finding clang files
           Invoke-WebRequest https://github.com/sharkdp/fd/releases/download/v8.2.1/fd-v8.2.1-i686-pc-windows-msvc.zip -OutFile fd.zip
           7z x fd.zip
 
@@ -61,16 +78,32 @@ jobs:
         env:
           llvmversion: ${{ matrix.llvm-version }}
 
-      - name: Test inlined contents
+      - name: Test dlopen clang_rt.asan_dynamic-x86_64.dll
+        if: matrix.os == 'windows-latest'
         run: |
-          python test_ok.py
+          python test_dlopen_asan_dynamic-x86_64.py
         shell: pwsh
         env:
-          llvmversion: ${{ matrix.llvm-version }}
+          clang_rt_path: "llvm/lib/clang/${{ matrix.llvm-version }}.0.0/lib/windows/clang_rt.asan_dynamic-x86_64.dll"
 
-      - name: Test
+      - name: Test dlopen clang_rt.asan_dynamic-x86_64.dll
+        if: matrix.os == 'ubuntu-latest'
         run: |
-          python test.py
+          $env:LD_PRELOAD = "llvm/lib/clang/${env:llvmversion}.0.0/lib/linux/libclang_rt.asan-x86_64.so"
+          python test_dlopen_asan_dynamic-x86_64.py
         shell: pwsh
-        env:
-          llvmversion: ${{ matrix.llvm-version }}
+
+
+      # - name: Test inlined contents
+      #   run: |
+      #     python test_ok.py
+      #   shell: pwsh
+      #   env:
+      #     llvmversion: ${{ matrix.llvm-version }}
+
+      # - name: Test
+      #   run: |
+      #     python test.py
+      #   shell: pwsh
+      #   env:
+      #     llvmversion: ${{ matrix.llvm-version }}

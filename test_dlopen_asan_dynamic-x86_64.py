@@ -1,7 +1,9 @@
+import os
+
 import cffi
 
-
+clang_rt = os.environ["clang_rt_path"]
 ffi = cffi.FFI()
-asanrt = ffi.dlopen(r"c:\s\eklang\DevOps\clang\bin\LLVM-13.0.0-win64\lib\clang\13.0.0\lib\windows\clang_rt.asan_dynamic-x86_64.dll")
+asanrt = ffi.dlopen(clang_rt)
 
 import pdb  # comment this line and asan will not complain
